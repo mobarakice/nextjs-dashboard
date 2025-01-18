@@ -1,14 +1,5 @@
 // import { sql } from '@vercel/postgres';
-import {
-    Customer,
-    CustomerField, CustomerImgField,
-    CustomersTableType, Invoice, InvoiceCount,
-    InvoiceForm,
-    InvoicesTable, LatestInvoice,
-    LatestInvoiceRaw,
-    Revenue,
-} from './definitions';
-import {formatCurrency} from './utils';
+import {Invoice, InvoiceCount, InvoicesTable, LatestInvoice,} from './definitions';
 
 const fetcher = (url: string | URL | Request) => fetch(url).then((r) => r.json())
 
@@ -16,7 +7,7 @@ export async function fetchRevenue() {
     try {
 
         // console.log('Fetching revenue data...');
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
         const response = await fetch('http://localhost:8080/api/revenue')
         const data = await response.json()
 
@@ -58,42 +49,19 @@ export async function fetchCardData() {
     }
 }
 
-//
-// const ITEMS_PER_PAGE = 6;
-// export async function fetchFilteredInvoices(
-//   query: string,
-//   currentPage: number,
-// ) {
-//   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-//
-//   try {
-//     const invoices = await sql<InvoicesTable>`
-//       SELECT
-//         invoices.id,
-//         invoices.amount,
-//         invoices.date,
-//         invoices.status,
-//         customers.name,
-//         customers.email,
-//         customers.image_url
-//       FROM invoices
-//       JOIN customers ON invoices.customer_id = customers.id
-//       WHERE
-//         customers.name ILIKE ${`%${query}%`} OR
-//         customers.email ILIKE ${`%${query}%`} OR
-//         invoices.amount::text ILIKE ${`%${query}%`} OR
-//         invoices.date::text ILIKE ${`%${query}%`} OR
-//         invoices.status ILIKE ${`%${query}%`}
-//       ORDER BY invoices.date DESC
-//       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
-//     `;
-//
-//     return invoices.rows;
-//   } catch (error) {
-//     console.error('Database Error:', error);
-//     throw new Error('Failed to fetch invoices.');
-//   }
-// }
+
+const ITEMS_PER_PAGE = 6;
+
+export async function fetchFilteredInvoices(query: string, currentPage: number) {
+    try {
+        const url = `http://localhost:8080/api/invoices/search?query=${encodeURIComponent(query)}&page=${currentPage}&size=6`;
+        return (await fetcher(url)) as InvoicesTable[];
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        throw new Error('Failed to fetch invoices.');
+    }
+}
+
 //
 // export async function fetchInvoicesPages(query: string) {
 //   try {
