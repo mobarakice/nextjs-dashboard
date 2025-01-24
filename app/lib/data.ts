@@ -1,5 +1,5 @@
 // import { sql } from '@vercel/postgres';
-import {Invoice, InvoiceCount, InvoicesTable, LatestInvoice,} from './definitions';
+import {Invoice, InvoiceCount, InvoiceSearchData, InvoiceTable, LatestInvoice,} from './definitions';
 
 const fetcher = (url: string | URL | Request) => fetch(url).then((r) => r.json())
 
@@ -54,8 +54,8 @@ const ITEMS_PER_PAGE = 6;
 
 export async function fetchFilteredInvoices(query: string, currentPage: number) {
     try {
-        const url = `http://localhost:8080/api/invoices/search?query=${encodeURIComponent(query)}&page=${currentPage}&size=6`;
-        return (await fetcher(url)) as InvoicesTable[];
+        const url = `http://localhost:8080/api/invoices/search?query=${encodeURIComponent(query)}&page=${currentPage}&size=${ITEMS_PER_PAGE}`;
+        return (await fetcher(url)) as InvoiceSearchData;
     } catch (error) {
         console.error('Fetch Error:', error);
         throw new Error('Failed to fetch invoices.');

@@ -50,7 +50,7 @@ export type InvoiceCount = {
     total: number;
 };
 
-export type InvoicesTable = {
+export type InvoiceTable = {
     id: string;
     customer_id: string;
     name: string;
@@ -60,6 +60,13 @@ export type InvoicesTable = {
     amount: number;
     status: 'pending' | 'paid';
 };
+
+export type InvoiceSearchData = {
+    currentPage: number;
+    totalPage: number;
+    totalElements: number;
+    content: InvoiceTable[]
+}
 
 export type CustomersTableType = {
     id: string;
