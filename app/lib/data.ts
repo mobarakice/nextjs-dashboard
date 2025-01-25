@@ -94,6 +94,26 @@ export async function saveInvoice(
     }
 }
 
+export async function deleteInvoiceById(
+    path: string,
+) {
+    try {
+        const url = `http://localhost:8080/api/invoices${path}`
+        await fetch(url, {
+            method: "DELETE",
+        }).then(() => {
+                console.error('Creating invoice successfully');
+            }
+        ).catch((error) => {
+            console.error('Fetch Error:', error);
+            throw new Error('Failed to fetch invoices.');
+        });
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        throw new Error('Failed to fetch invoices.');
+    }
+}
+
 export async function fetchInvoiceById(id: string) {
   try {
     return await fetcher(`http://localhost:8080/api/invoices/${id}`);

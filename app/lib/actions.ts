@@ -1,6 +1,6 @@
 'use server';
 import { z } from 'zod';
-import { saveInvoice } from "@/app/lib/data";
+import {deleteInvoiceById, saveInvoice} from "@/app/lib/data";
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -45,4 +45,10 @@ export async function updateInvoice(id: string, formData: FormData) {
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
+}
+
+export async function deleteInvoice(id: string) {
+    const path = `/${id}`
+    await deleteInvoiceById(path,);
+    revalidatePath('/dashboard/invoices');
 }
