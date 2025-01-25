@@ -1,5 +1,5 @@
 // import { sql } from '@vercel/postgres';
-import {Invoice, InvoiceCount, InvoiceSearchData, InvoiceTable, LatestInvoice,} from './definitions';
+import {CustomerPageData, Invoice, InvoiceCount, InvoiceSearchData, InvoiceTable, LatestInvoice,} from './definitions';
 
 const fetcher = (url: string | URL | Request) => fetch(url).then((r) => r.json())
 
@@ -62,70 +62,57 @@ export async function fetchFilteredInvoices(query: string, currentPage: number) 
     }
 }
 
-//
-// export async function fetchInvoicesPages(query: string) {
-//   try {
-//     const count = await sql`SELECT COUNT(*)
-//     FROM invoices
-//     JOIN customers ON invoices.customer_id = customers.id
-//     WHERE
-//       customers.name ILIKE ${`%${query}%`} OR
-//       customers.email ILIKE ${`%${query}%`} OR
-//       invoices.amount::text ILIKE ${`%${query}%`} OR
-//       invoices.date::text ILIKE ${`%${query}%`} OR
-//       invoices.status ILIKE ${`%${query}%`}
-//   `;
-//
-//     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-//     return totalPages;
-//   } catch (error) {
-//     console.error('Database Error:', error);
-//     throw new Error('Failed to fetch total number of invoices.');
-//   }
-// }
-//
-// export async function fetchInvoiceById(id: string) {
-//   try {
-//     const data = await sql<InvoiceForm>`
-//       SELECT
-//         invoices.id,
-//         invoices.customer_id,
-//         invoices.amount,
-//         invoices.status
-//       FROM invoices
-//       WHERE invoices.id = ${id};
-//     `;
-//
-//     const invoice = data.rows.map((invoice) => ({
-//       ...invoice,
-//       // Convert amount from cents to dollars
-//       amount: invoice.amount / 100,
-//     }));
-//
-//     return invoice[0];
-//   } catch (error) {
-//     console.error('Database Error:', error);
-//     throw new Error('Failed to fetch invoice.');
-//   }
-// }
-//
-// export async function fetchCustomers() {
-//   try {
-//     const data = await sql<CustomerField>`
-//       SELECT
-//         id,
-//         name
-//       FROM customers
-//       ORDER BY name ASC
-//     `;
-//
-//     const customers = data.rows;
-//     return customers;
-//   } catch (err) {
-//     console.error('Database Error:', err);
-//     throw new Error('Failed to fetch all customers.');
-//   }
-// }
+export async function saveInvoice(
+    path: string,
+    method: string,
+    customerId: string,
+    amount: number,
+    status: string,
+) {
+    try {
+        const url = `http://localhost:8080/api/invoices${path}`
+        await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                customerId, // ES6 shorthand for `customerId: customerId`
+                amount,
+                status,
+            }),
+        }).then(() => {
+                console.error('Creating invoice successfully');
+            }
+        ).catch((error) => {
+            console.error('Fetch Error:', error);
+            throw new Error('Failed to fetch invoices.');
+        });
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        throw new Error('Failed to fetch invoices.');
+    }
+}
+
+export async function fetchInvoiceById(id: string) {
+  try {
+    return await fetcher(`http://localhost:8080/api/invoices/${id}`);
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    throw new Error('Failed to fetch invoice.');
+  }
+}
+
+export async function fetchCustomers() {
+    try {
+        const url = 'http://localhost:8080/api/customers?sort=name%2Casc'
+        return await fetcher(url) as CustomerPageData;
+    } catch (err) {
+        console.error('Fetch Error:', err);
+        throw new Error('Failed to fetch all customers.');
+    }
+}
+
 //
 // export async function fetchFilteredCustomers(query: string) {
 //   try {

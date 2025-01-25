@@ -88,6 +88,10 @@ export type FormattedCustomersTable = {
     total_paid: string;
 };
 
+export type CustomerPageData = Omit<InvoiceSearchData, "content"> & {
+    content: CustomerField[]
+}
+
 export type CustomerField = {
     id: string;
     name: string;
@@ -100,7 +104,7 @@ export type CustomerImgField = {
 
 export type InvoiceForm = {
     id: string;
-    customer_id: string;
+    customerId: string;
     amount: number;
     status: 'pending' | 'paid';
 };
