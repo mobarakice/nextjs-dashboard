@@ -1,5 +1,14 @@
 // import { sql } from '@vercel/postgres';
-import {CustomerPageData, Invoice, InvoiceCount, InvoiceSearchData, InvoiceTable, LatestInvoice,} from './definitions';
+import {
+    CustomerPageData,
+    Invoice,
+    InvoiceCount,
+    InvoiceSearchData,
+    InvoiceTable,
+    LatestInvoice,
+    User,
+} from './definitions';
+import {invoices, revenue} from "@/app/lib/placeholder-data";
 
 const fetcher = (url: string | URL | Request) => fetch(url).then((r) => r.json())
 
@@ -127,6 +136,23 @@ export async function fetchCustomers() {
     try {
         const url = 'http://localhost:8080/api/customers?sort=name%2Casc'
         return await fetcher(url) as CustomerPageData;
+    } catch (err) {
+        console.error('Fetch Error:', err);
+        throw new Error('Failed to fetch all customers.');
+    }
+}
+
+export async function fetchLogin(email: string) {
+    try {
+        const user: User = {
+            id: '12345',
+            name: 'John Doe',
+            email: 'user@nextmail.com',
+            password: '123456',
+        };
+        return user
+        // const url = 'http://localhost:8080/api/customers?sort=name%2Casc'
+        // return await fetcher(url) as CustomerPageData;
     } catch (err) {
         console.error('Fetch Error:', err);
         throw new Error('Failed to fetch all customers.');
