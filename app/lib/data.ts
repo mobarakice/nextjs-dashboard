@@ -1,6 +1,6 @@
 // import { sql } from '@vercel/postgres';
 import {
-    CustomerPageData,
+    CustomerPageData, CustomersData, CustomersTableType,
     Invoice,
     InvoiceCount,
     InvoiceSearchData,
@@ -9,6 +9,7 @@ import {
     User,
 } from './definitions';
 import {invoices, revenue} from "@/app/lib/placeholder-data";
+import {formatCurrency} from "@/app/lib/utils";
 
 const fetcher = (url: string | URL | Request) => fetch(url).then((r) => r.json())
 
@@ -159,36 +160,20 @@ export async function fetchLogin(email: string) {
     }
 }
 
-//
-// export async function fetchFilteredCustomers(query: string) {
-//   try {
-//     const data = await sql<CustomersTableType>`
-// 		SELECT
-// 		  customers.id,
-// 		  customers.name,
-// 		  customers.email,
-// 		  customers.image_url,
-// 		  COUNT(invoices.id) AS total_invoices,
-// 		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
-// 		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
-// 		FROM customers
-// 		LEFT JOIN invoices ON customers.id = invoices.customer_id
-// 		WHERE
-// 		  customers.name ILIKE ${`%${query}%`} OR
-//         customers.email ILIKE ${`%${query}%`}
-// 		GROUP BY customers.id, customers.name, customers.email, customers.image_url
-// 		ORDER BY customers.name ASC
-// 	  `;
-//
-//     const customers = data.rows.map((customer) => ({
-//       ...customer,
-//       total_pending: formatCurrency(customer.total_pending),
-//       total_paid: formatCurrency(customer.total_paid),
-//     }));
-//
-//     return customers;
-//   } catch (err) {
-//     console.error('Database Error:', err);
-//     throw new Error('Failed to fetch customer table.');
-//   }
-// }
+
+export async function fetchFilteredCustomers(query: string) {
+  try {
+      const url = `http://localhost:8080/api/customers/search?query=${encodeURIComponent(query)}`;
+    const data = await fetcher(url) as CustomersData;
+    const customers = data.content.map((customer) => ({
+      ...customer,
+      total_pending: formatCurrency(customer.total_pending),
+      total_paid: formatCurrency(customer.total_paid),
+    }));
+
+    return customers;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch customer table.');
+  }
+}

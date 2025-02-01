@@ -92,6 +92,10 @@ export type CustomerPageData = Omit<InvoiceSearchData, "content"> & {
     content: CustomerField[]
 }
 
+export type CustomersData = Omit<InvoiceSearchData, "content"> & {
+    content: CustomersTableType[]
+}
+
 export type CustomerField = {
     id: string;
     name: string;
